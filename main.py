@@ -6,7 +6,7 @@ import xlsxwriter
 
 def fetch_crypto_data():
     url1 = "https://api.coincap.io/v2/assets"
-    params = {"limit": 20}
+    params = {"limit": 50}
     r = requests.get(url1, params=params)
     r.raise_for_status()
     data = r.json()["data"]
@@ -67,34 +67,27 @@ def create_directory_selector(frame):
     button3.pack(side=LEFT, padx=10, pady=5)
     return entry3
 
+
 def generate_excel_file(data, entry2, entry3):
     filename = entry2.get()
     directory = entry3.get()
-    found = False
-    for line in data:
-        if filename.lower() == line[1].lower():
-            create_excel_file(line, directory, filename)
-            found = True
-            break
-    if not found:
-        messagebox.showwarning("Warning", "No matching cryptocurrency found")
-
-def create_excel_file(line, directory, filename):
     file_path = path.join(directory, f"{filename}.xlsx")
     workbook = xlsxwriter.Workbook(file_path)
     worksheet = workbook.add_worksheet()
-    worksheet.write(0, 0, "Name")
-    worksheet.write(0, 1, "Symbol")
-    worksheet.write(0, 2, "Price (USD)")
-    worksheet.write(0, 3, "Volume (24Hr)")
-    worksheet.write(0, 4, "Change (24Hr %)")
 
-    for i in range(len(line)):
-        worksheet.write(1, i, line[i])
+    # Headers
+    headers = ["Name", "Symbol", "Price (USD)", "Volume (24Hr)", "Change (24Hr %)"]
+    for i, header in enumerate(headers):
+        worksheet.write(0, i, header)
+
+    # Write data
+    for j, line in enumerate(data):
+        for i, value in enumerate(line):
+            worksheet.write(j + 1, i, value)
 
     workbook.close()
     messagebox.showinfo("Success", f"Excel file created at {file_path}")
-    exit()
+
 
 def main():
     fetch_crypto_data()
@@ -104,7 +97,7 @@ def main():
     icon = PhotoImage(file="bitcoin.png")
     root.iconphoto(True, icon)
     root.config(bg="#F7931A")
-    root.geometry('700x300+200+200')
+    root.geometry('600x300+200+200')
     root.resizable(width=False, height=False)
 
     # Create and pack frames
