@@ -12,12 +12,15 @@ def fetch_crypto_data():
     Params: None
     Return: None
     """
-    url1 = "https://api.coincap.io/v2/assets"
-    params = {"limit": 50}
-    r = requests.get(url1, params=params)
-    r.raise_for_status()
-    data = r.json()["data"]
-    save_crypto_data_to_txt(data)
+    try:
+        url1 = "https://api.coincap.io/v2/assets"
+        params = {"limit": 50}
+        r = requests.get(url1, params=params)
+        r.raise_for_status()
+        data = r.json()["data"]
+        save_crypto_data_to_txt(data)
+    except:
+        messagebox.showerror("Error Check your internet connection")
 
 
 def save_crypto_data_to_txt(data):
